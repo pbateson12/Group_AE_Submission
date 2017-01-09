@@ -1,5 +1,6 @@
 package com.peterbateson.drivingquiz;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
@@ -10,7 +11,12 @@ import android.content.Intent;
 
 public class QuizActivity extends AppCompatActivity {
 
+    public int highScore;
+    public String highScoreString;
+    private SharedPreferences mSharedPreferences;
+
     public int currentScore = 0;
+    public String currentScoreString = String.valueOf(currentScore);
     private int Index = 0;
     private Button TrueButton;
     private Button FalseButton;
@@ -18,6 +24,7 @@ public class QuizActivity extends AppCompatActivity {
     private Button CheatButton;
     private TextView currentQuestion;
     private boolean AnswerIsTrue;
+
 
     private Button questionOne;
     private Button questionTwo;
@@ -31,58 +38,25 @@ public class QuizActivity extends AppCompatActivity {
     private Button questionTen;
 
 
-    public String currentScoreString = String.valueOf(currentScore);
-
-
-    private QuestionAnswers[] QuestionBank = new QuestionAnswers[] {
-            new QuestionAnswers(R.string.question_1, true),
-            new QuestionAnswers(R.string.question_2, true),
-            new QuestionAnswers(R.string.question_3, false),
-            new QuestionAnswers(R.string.question_4, false),
-            new QuestionAnswers(R.string.question_5, true),
-            new QuestionAnswers(R.string.question_6, false),
-            new QuestionAnswers(R.string.question_7, false),
-            new QuestionAnswers(R.string.question_8, true),
-            new QuestionAnswers(R.string.question_9, false),
-            new QuestionAnswers(R.string.question_10, true),
-    };
-
-    public void updateQuestionNumber()
-    {
-        int question = QuestionBank[Index].getmQuestion();
-        currentQuestion.setText(question);
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mSharedPreferences.edit().putInt(highScoreString, highScore).commit();
     }
-
-
-    private void updateUserScore() {
-        TextView Score = (TextView)findViewById(R.id.onScreenScore);
-        Score.setText(currentScoreString);
-    }
-
-    private void checkUserAnswer(boolean userPressedTrue) {
-        boolean answerIsTrue = QuestionBank[Index].ismTrueQuestion();
-        Index = Index + 1;
-
-        if (userPressedTrue == answerIsTrue) {
-            currentScore = currentScore + 1;
-            currentScoreString = String.valueOf(currentScore);
-        }
-
-        if (Index < 10) {
-            updateQuestionNumber();
-        } else {
-            Intent toFinalScorePage = new Intent(QuizActivity.this, FinalScoreActivity.class);
-            toFinalScorePage.putExtra("score", currentScoreString);
-            startActivity(toFinalScorePage);
-        }
-
-    }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
+
+        mSharedPreferences = getPreferences(MODE_PRIVATE);
+
+        highScore = 0;
+        highScoreString = getString(R.string.high_score);
+
+        highScore = mSharedPreferences.getInt(highScoreString, 0);
+
+
 
         currentQuestion = (TextView)findViewById(R.id.question_text_view);
 
@@ -114,6 +88,7 @@ public class QuizActivity extends AppCompatActivity {
                 } else {
                     Intent toFinalScorePage = new Intent(QuizActivity.this, FinalScoreActivity.class);
                     toFinalScorePage.putExtra("score", currentScoreString);
+                    toFinalScorePage.putExtra("highscore", highScore);
                     startActivity(toFinalScorePage);
                 }
             }
@@ -142,6 +117,7 @@ public class QuizActivity extends AppCompatActivity {
                 } else {
                     Intent toFinalScorePage = new Intent(QuizActivity.this, FinalScoreActivity.class);
                     toFinalScorePage.putExtra("score", currentScoreString);
+                    toFinalScorePage.putExtra("highscore", highScore);
                     startActivity(toFinalScorePage);
                 }
 
@@ -241,5 +217,64 @@ public class QuizActivity extends AppCompatActivity {
         updateQuestionNumber();
 
     }
+
+
+
+    protected void updateHighScore() {
+        if (currentScore > highScore) {
+            highScore = currentScore;
+        }
+    }
+
+
+    private QuestionAnswers[] QuestionBank = new QuestionAnswers[] {
+            new QuestionAnswers(R.string.question_1, true),
+            new QuestionAnswers(R.string.question_2, true),
+            new QuestionAnswers(R.string.question_3, false),
+            new QuestionAnswers(R.string.question_4, false),
+            new QuestionAnswers(R.string.question_5, true),
+            new QuestionAnswers(R.string.question_6, false),
+            new QuestionAnswers(R.string.question_7, false),
+            new QuestionAnswers(R.string.question_8, true),
+            new QuestionAnswers(R.string.question_9, false),
+            new QuestionAnswers(R.string.question_10, true),
+    };
+
+
+    public void updateQuestionNumber()
+    {
+        int question = QuestionBank[Index].getmQuestion();
+        currentQuestion.setText(question);
+    }
+
+
+    private void updateUserScore() {
+        TextView Score = (TextView)findViewById(R.id.onScreenScore);
+        Score.setText(currentScoreString);
+    }
+
+    private void checkUserAnswer(boolean userPressedTrue) {
+        boolean answerIsTrue = QuestionBank[Index].ismTrueQuestion();
+        Index = Index + 1;
+
+        if (userPressedTrue == answerIsTrue) {
+            currentScore = currentScore + 1;
+            updateHighScore();
+            currentScoreString = String.valueOf(currentScore);
+        }
+
+        if (Index < 10) {
+            updateQuestionNumber();
+        } else {
+            Intent toFinalScorePage = new Intent(QuizActivity.this, FinalScoreActivity.class);
+            toFinalScorePage.putExtra("score", currentScoreString);
+            toFinalScorePage.putExtra("highscore", highScore);
+            startActivity(toFinalScorePage);
+        }
+
+    }
+
+
+
 
 }

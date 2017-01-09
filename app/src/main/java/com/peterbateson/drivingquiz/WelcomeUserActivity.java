@@ -1,16 +1,12 @@
 package com.peterbateson.drivingquiz;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Button;
-import android.widget.Toast;
 
-import org.w3c.dom.Text;
 
 public class WelcomeUserActivity extends AppCompatActivity {
 
@@ -18,10 +14,15 @@ public class WelcomeUserActivity extends AppCompatActivity {
     private Button mSignOutButton;
     private String mPreviousScore;
     private TextView mPreviousScoreTextView;
+    private TextView mHighScoreView;
+    private int mUserHighScore;
 
     private void showHighScores(){
         mPreviousScoreTextView = (TextView)findViewById(R.id.previous_score);
         mPreviousScoreTextView.setText(mPreviousScore);
+
+        mHighScoreView = (TextView)findViewById(R.id.highScoreTextView);
+        mHighScoreView.setText(Integer.toString(mUserHighScore));
     }
 
     @Override
@@ -30,7 +31,7 @@ public class WelcomeUserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_welcome_user);
 
         mPreviousScore = getIntent().getStringExtra("previousScore");
-
+        mUserHighScore = getIntent().getIntExtra("highScore", 0);
 
         String username = getIntent().getStringExtra("Username");
         TextView welcomeUsername = (TextView)findViewById(R.id.welcomeUsername);

@@ -13,6 +13,7 @@ public class FinalScoreActivity extends AppCompatActivity {
     private Button mReturnToHome;
     private String mFinalScore;
     private TextView mFinalScoreTextView;
+    private int mHighScore;
 
 
     private void showScore(){
@@ -26,6 +27,7 @@ public class FinalScoreActivity extends AppCompatActivity {
         setContentView(R.layout.activity_final_score);
 
         mFinalScore = getIntent().getStringExtra("score");
+        mHighScore = getIntent().getIntExtra("highscore", 0);
 
         mReturnToHome = (Button)findViewById(R.id.return_to_home_button);
         mReturnToHome.setOnClickListener(new View.OnClickListener() {
@@ -33,6 +35,7 @@ public class FinalScoreActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent ReturnToHome = new Intent(FinalScoreActivity.this, WelcomeUserActivity.class);
                 ReturnToHome.putExtra("previousScore", mFinalScore);
+                ReturnToHome.putExtra("highScore", mHighScore);
                 startActivity(ReturnToHome);
 
                 String messageMultiplayer = "Now sign out and get your friend to log in!";
